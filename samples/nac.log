@@ -1,0 +1,2 @@
+{"ts":"2026-11-03T09:59:00+09:00","source":"nac","event":"access_allow","device_id":"dev-01","ip":"10.0.0.5","managed":true}
+{"ts":"2026-11-03T10:00:50+09:00","source":"nac","event":"access_deny","device_id":"unknown","mac":"de:ad:be:ef:00:09","ip":"203.0.113.9","managed":false,"reason":"unknown_device"}

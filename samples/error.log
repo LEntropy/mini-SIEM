@@ -1,0 +1,1 @@
+[Mon Nov 03 10:01:00.123456 2026] [php:error] [pid 1] [client 203.0.113.9:51000] PHP Fatal error:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax in /var/www/search.php:20

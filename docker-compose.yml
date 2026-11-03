@@ -1,0 +1,6 @@
+services:
+  demo:
+    build: .
+    # Generates docs/sample_report.html from the bundled multi-source sample logs.
+    volumes:
+      - ./docs:/app/docs
