@@ -10,7 +10,8 @@ from core import SEVERITY_RANK, sort_alerts
 SEV_KO = {"critical": "긴급", "high": "높음", "medium": "중간", "low": "낮음", "info": "정보"}
 SEV_COLOR = {"critical": "#b3123b", "high": "#d9480f", "medium": "#c08a00",
              "low": "#1c7ed6", "info": "#5c7080"}
-SRC_KO = {"apache": "웹(Apache)", "auth": "인증(SSH)", "nac": "NAC", "pms": "PMS"}
+SRC_KO = {"apache": "웹(Apache)", "auth": "인증(SSH)", "nac": "NAC", "pms": "PMS",
+          "luretrace": "미끼(LureTrace)"}
 
 
 def _esc(s):
@@ -61,6 +62,11 @@ def build_report(alerts, actions=None, events=None, target="(미지정)") -> str
             if a.enrichment.get("asset_patched") is False:
                 miss = ", ".join(a.enrichment.get("missing_patches", []))
                 chips.append(f"<span class='chip bad'>PMS: 미패치 ({_esc(miss)})</span>")
+            if a.enrichment.get("decoy_contact"):
+                chips.append("<span class='chip bad'>LureTrace: 미끼 접촉</span>")
+            techniques = a.enrichment.get("decoy_techniques")
+            if techniques:
+                chips.append(f"<span class='chip'>미끼에서 시도: {_esc(', '.join(techniques))}</span>")
             if a.enrichment.get("http_status") == 200:
                 chips.append("<span class='chip'>HTTP 200 (성공 가능)</span>")
             enr = "<div class='chips'>" + "".join(chips) + "</div>"
@@ -84,8 +90,8 @@ def build_report(alerts, actions=None, events=None, target="(미지정)") -> str
 
     total = len(alerts)
     ch = sev_counts.get("critical", 0) + sev_counts.get("high", 0)
-    verdict = ("긴급·높음 경보가 발생했습니다. 상관분석 결과 미관리 디바이스/미패치 자산과 연계된 "
-               "공격이 포함되어 즉시 대응(격리·패치)이 필요합니다." if ch else
+    verdict = ("긴급·높음 경보가 발생했습니다. 상관분석에서 연계된 공격이 확인되면 "
+               "즉시 대응(격리·패치)이 필요합니다." if ch else
                ("중간 이하 위주로, 지속 모니터링을 권고합니다." if total else "유효한 위협이 탐지되지 않았습니다."))
 
     return f"""<!doctype html><html lang="ko"><head><meta charset="utf-8">
@@ -121,7 +127,7 @@ def build_report(alerts, actions=None, events=None, target="(미지정)") -> str
 </style></head><body><div class="wrap">
  <header class="top"><h1>LogSentry · 로그 기반 위협 탐지 리포트</h1>
   <div class="m">대상: {_esc(target)} &nbsp;·&nbsp; 생성: {now} &nbsp;·&nbsp; 수집 이벤트 {len(events)}건</div>
-  <div class="m">멀티소스(웹·인증·NAC·PMS) 상관분석 + 자동 대응(NAC 격리 / PMS 패치)</div></header>
+  <div class="m">멀티소스(웹·인증·NAC·PMS·미끼) 상관분석 + 자동 대응(NAC 격리 / PMS 패치)</div></header>
  <div class="cards">{cards}</div>
  <div class="verdict"><b>종합.</b> 경보 {total}건. {verdict}</div>
  <div class="two">

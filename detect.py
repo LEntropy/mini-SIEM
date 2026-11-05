@@ -10,9 +10,11 @@ Two layers:
        * UNMANAGED-DEVICE attack : attacker IP that NAC flagged managed=false
        * UNPATCHED-ASSET attack  : web attack against a host PMS marks patched=false
        * successful exploitation : signature hit that returned HTTP 200
+       * decoy contact           : source that touched a LureTrace decoy, weighted
+                                   by what it did there and on real services
 
-Correlation enriches alerts (device_managed / asset_patched) and raises
-severity, and records the response action to take (NAC quarantine / PMS patch).
+Correlation enriches alerts (device_managed / asset_patched / decoy_contact) and
+raises severity, and records the response action to take (NAC quarantine / PMS patch).
 """
 from __future__ import annotations
 
@@ -86,7 +88,99 @@ def detect_signatures(events: List[Event]) -> List[Alert]:
     return alerts
 
 
-def analyze(events: List[Event], bf_threshold: int = 5, scan_threshold: int = 15) -> List[Alert]:
+def _decoy_contacts(events: List[Event], trusted) -> dict:
+    """Summarize decoy activity per source IP, leaving out trusted sources."""
+    contacts = {}
+    for e in events:
+        if e.source != "luretrace" or e.ip in trusted:
+            continue
+        c = contacts.setdefault(e.ip, {"events": 0, "credentials": 0, "users": set(),
+                                       "techniques": set(), "first": e.ts})
+        c["events"] += 1
+        if e.kind == "decoy_auth":
+            c["credentials"] += 1
+            if e.data.get("username"):
+                c["users"].add(str(e.data["username"]))
+        hay = urllib.parse.unquote(e.path).lower() + " " + e.ua.lower()
+        for _rid, _sev, category, _cwe, rx, _msg, _rec in SIGNATURES:
+            if rx.search(hay):
+                c["techniques"].add(category)
+        if SCANNER_UA.search(e.ua):
+            c["techniques"].add("Scanner tool")
+    return contacts
+
+
+def correlate_decoys(events: List[Event], alerts: List[Alert], trusted=()) -> List[Alert]:
+    """Cross-reference decoy contacts with real logs.
+
+    Nothing legitimate should ever touch a decoy, so a contact is a strong signal
+    on its own, and it raises the weight of whatever else that source did. This
+    enriches `alerts` in place and returns the new alerts. Syslog timestamps have
+    no year or zone, so "also seen" means the same logs, not a proven order.
+    """
+    contacts = _decoy_contacts(events, set(trusted))
+    new_alerts: List[Alert] = []
+
+    for ip, c in contacts.items():
+        serious = c["credentials"] > 0 or bool(c["techniques"])
+        a = Alert(
+            "DECOY-CONTACT-001", "high" if serious else "medium", "Deception Contact",
+            "ATT&CK-T1110" if c["credentials"] else "ATT&CK-T1595",
+            f"{ip} touched the LureTrace decoy: {c['events']} events, "
+            f"{c['credentials']} credential attempts.",
+            src_ip=ip, when=c["first"],
+            evidence="users=" + ",".join(sorted(c["users"]))[:120] +
+                     " techniques=" + ",".join(sorted(c["techniques"]))[:120],
+            recommendation="Investigate the source; legitimate users have no reason to reach a decoy.")
+        a.enrichment.update(decoy_contact=True, decoy_events=c["events"],
+                            decoy_usernames=sorted(c["users"]),
+                            decoy_techniques=sorted(c["techniques"]))
+        if serious:
+            a.responses.append(f"NAC: quarantine {ip} (touched decoy)")
+        new_alerts.append(a)
+
+    # Real logins and traffic from an address that also touched the decoy.
+    real = defaultdict(list)
+    for e in events:
+        if e.source in ("apache", "auth") and e.ip in contacts:
+            real[e.ip].append(e)
+    for ip, evs in real.items():
+        c = contacts[ip]
+        logins = [e for e in evs if e.kind == "auth_ok"]
+        if logins:
+            users = sorted({str(e.data.get("user", "")) for e in logins})
+            reused = sorted(set(users) & c["users"])
+            a = Alert(
+                "DECOY-AUTH-001", "critical", "Compromise After Decoy Contact", "ATT&CK-T1078",
+                f"{ip} logged in to a real server and also touched the decoy.",
+                src_ip=ip, when=logins[0].ts,
+                evidence="real login users=" + ",".join(users)[:120] +
+                         " also tried on decoy=" + ",".join(reused)[:120],
+                recommendation="Treat the account as compromised: end its sessions and reset its credentials.")
+            a.enrichment.update(decoy_contact=True, decoy_reused_usernames=reused)
+            a.responses.append(f"NAC: quarantine {ip} (touched decoy)")
+        else:
+            a = Alert(
+                "DECOY-PIVOT-001", "high", "Activity After Decoy Contact", "ATT&CK-T1021",
+                f"{ip} touched the decoy and also reached real services ({len(evs)} events).",
+                src_ip=ip, host=evs[0].host, when=evs[0].ts,
+                evidence=f"{len(evs)} events in real logs, {c['events']} on the decoy",
+                recommendation="Review this source's activity on the real services.")
+            a.enrichment["decoy_contact"] = True
+            a.responses.append(f"NAC: quarantine {ip} (touched decoy)")
+        new_alerts.append(a)
+
+    # Existing alerts from these sources carry more weight, except reconnaissance noise.
+    for a in alerts:
+        if a.src_ip in contacts:
+            a.enrichment["decoy_contact"] = True
+            if a.category != "Reconnaissance":
+                a.severity = _raise(a.severity)
+    return new_alerts
+
+
+def analyze(events: List[Event], bf_threshold: int = 5, scan_threshold: int = 15,
+            trusted_decoy_ips=()) -> List[Alert]:
     alerts = detect_signatures(events)
 
     # context from NAC / PMS
@@ -150,4 +244,5 @@ def analyze(events: List[Event], bf_threshold: int = 5, scan_threshold: int = 15
                 src_ip=ip, evidence=f"{c} 4xx responses",
                 recommendation="Rate-limit and block the scanning source."))
 
+    alerts.extend(correlate_decoys(events, alerts, trusted_decoy_ips))
     return sort_alerts(alerts)

@@ -30,16 +30,16 @@
  footer{color:#5c7080;font-size:.8rem;margin-top:28px;text-align:center}
 </style></head><body><div class="wrap">
  <header class="top"><h1>LogSentry · 로그 기반 위협 탐지 리포트</h1>
-  <div class="m">대상: web01 (demo) &nbsp;·&nbsp; 생성: 2026-11-03 16:18 &nbsp;·&nbsp; 수집 이벤트 44건</div>
-  <div class="m">멀티소스(웹·인증·NAC·PMS) 상관분석 + 자동 대응(NAC 격리 / PMS 패치)</div></header>
- <div class="cards"><div class="card" style="border-top:4px solid #b3123b"><div class="num">6</div><div class="lbl">긴급 (critical)</div></div><div class="card" style="border-top:4px solid #d9480f"><div class="num">1</div><div class="lbl">높음 (high)</div></div><div class="card" style="border-top:4px solid #c08a00"><div class="num">9</div><div class="lbl">중간 (medium)</div></div><div class="card" style="border-top:4px solid #1c7ed6"><div class="num">0</div><div class="lbl">낮음 (low)</div></div><div class="card" style="border-top:4px solid #5c7080"><div class="num">0</div><div class="lbl">정보 (info)</div></div></div>
- <div class="verdict"><b>종합.</b> 경보 16건. 긴급·높음 경보가 발생했습니다. 상관분석 결과 미관리 디바이스/미패치 자산과 연계된 공격이 포함되어 즉시 대응(격리·패치)이 필요합니다.</div>
+  <div class="m">대상: web01 (demo) &nbsp;·&nbsp; 생성: 2026-11-05 15:05 &nbsp;·&nbsp; 수집 이벤트 48건</div>
+  <div class="m">멀티소스(웹·인증·NAC·PMS·미끼) 상관분석 + 자동 대응(NAC 격리 / PMS 패치)</div></header>
+ <div class="cards"><div class="card" style="border-top:4px solid #b3123b"><div class="num">7</div><div class="lbl">긴급 (critical)</div></div><div class="card" style="border-top:4px solid #d9480f"><div class="num">2</div><div class="lbl">높음 (high)</div></div><div class="card" style="border-top:4px solid #c08a00"><div class="num">10</div><div class="lbl">중간 (medium)</div></div><div class="card" style="border-top:4px solid #1c7ed6"><div class="num">0</div><div class="lbl">낮음 (low)</div></div><div class="card" style="border-top:4px solid #5c7080"><div class="num">0</div><div class="lbl">정보 (info)</div></div></div>
+ <div class="verdict"><b>종합.</b> 경보 19건. 긴급·높음 경보가 발생했습니다. 상관분석에서 연계된 공격이 확인되면 즉시 대응(격리·패치)이 필요합니다.</div>
  <div class="two">
-   <div><h2 class="sec">수집 소스</h2><table class="grid"><tr><th>소스</th><th>이벤트</th></tr><tr><td>웹(Apache)</td><td>32</td></tr><tr><td>인증(SSH)</td><td>7</td></tr><tr><td>NAC</td><td>2</td></tr><tr><td>PMS</td><td>3</td></tr></table></div>
-   <div><h2 class="sec">주요 공격 출발지</h2><table class="grid"><tr><th>IP</th><th>경보수</th></tr><tr><td class='mono'>203.0.113.9</td><td>8</td></tr><tr><td class='mono'>198.51.100.7</td><td>8</td></tr></table></div>
+   <div><h2 class="sec">수집 소스</h2><table class="grid"><tr><th>소스</th><th>이벤트</th></tr><tr><td>웹(Apache)</td><td>32</td></tr><tr><td>인증(SSH)</td><td>7</td></tr><tr><td>NAC</td><td>2</td></tr><tr><td>PMS</td><td>3</td></tr><tr><td>미끼(LureTrace)</td><td>4</td></tr></table></div>
+   <div><h2 class="sec">주요 공격 출발지</h2><table class="grid"><tr><th>IP</th><th>경보수</th></tr><tr><td class='mono'>203.0.113.9</td><td>10</td></tr><tr><td class='mono'>198.51.100.7</td><td>8</td></tr><tr><td class='mono'>198.51.100.77</td><td>1</td></tr></table></div>
  </div>
  <h2 class='sec'>대응 조치 (2)</h2><table class='grid'><tr><th>조치</th><th>대상</th><th>사유</th><th>상태</th></tr><tr><td>NAC.quarantine</td><td class='mono'>203.0.113.9</td><td>SQL Injection</td><td><b>planned</b></td></tr><tr><td>PMS.request_patch</td><td class='mono'>web01</td><td>CVE-2024-1234, CVE-2024-5678</td><td><b>planned</b></td></tr></table>
- <h2 class="sec">탐지 경보 (16)</h2>
+ <h2 class="sec">탐지 경보 (19)</h2>
  
         <section class="alert">
           <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
@@ -50,32 +50,32 @@
              <th>대상</th><td class="mono">web01</td></tr>
              <tr><th>시각</th><td>03/Nov/2026:10:01:00 +0900</td>
              <th>근거</th><td colspan="3" class="mono">/search.php?q=1&#x27;</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Use prepared statements; reject/cast unexpected input.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
-              2. Path Traversal / LFI <small>(CWE-22)</small></h3>
+              2. Cross-Site Scripting <small>(CWE-79)</small></h3>
+          <p class="msg">Cross-site scripting payload observed in request.</p>
+          <table class="meta"><tr><th>규칙</th><td>WEB-XSS-001</td>
+             <th>출발지</th><td class="mono">203.0.113.9</td>
+             <th>대상</th><td class="mono">web01</td></tr>
+             <tr><th>시각</th><td>03/Nov/2026:10:01:02 +0900</td>
+             <th>근거</th><td colspan="3" class="mono">/view.php?id=&lt;script&gt;alert(1)&lt;/script&gt;</td></tr></table>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
+          <div class="fix"><b>조치 권고</b> HTML-encode all reflected output (ENT_QUOTES).</div>
+        </section>
+        <section class="alert">
+          <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
+              3. Path Traversal / LFI <small>(CWE-22)</small></h3>
           <p class="msg">Path traversal / local file inclusion attempt. Server returned HTTP 200 — possible success.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-LFI-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">web01</td></tr>
              <tr><th>시각</th><td>03/Nov/2026:10:01:04 +0900</td>
              <th>근거</th><td colspan="3" class="mono">/download.php?file=../../../../etc/passwd</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Normalize and confine file paths to an allowed directory.</div>
-        </section>
-        <section class="alert">
-          <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
-              3. Sensitive File Access <small>(CWE-538)</small></h3>
-          <p class="msg">Access attempt to a sensitive/backup/config path. Server returned HTTP 200 — possible success.</p>
-          <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
-             <th>출발지</th><td class="mono">203.0.113.9</td>
-             <th>대상</th><td class="mono">web01</td></tr>
-             <tr><th>시각</th><td>03/Nov/2026:10:01:06 +0900</td>
-             <th>근거</th><td colspan="3" class="mono">/.env</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
-          <div class="fix"><b>조치 권고</b> Remove such files from the webroot; block these paths.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
@@ -84,50 +84,74 @@
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">web01</td></tr>
-             <tr><th>시각</th><td>03/Nov/2026:10:01:07 +0900</td>
-             <th>근거</th><td colspan="3" class="mono">/htdocs.zip</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
+             <tr><th>시각</th><td>03/Nov/2026:10:01:06 +0900</td>
+             <th>근거</th><td colspan="3" class="mono">/.env</td></tr></table>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Remove such files from the webroot; block these paths.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
-              5. Webshell / Command Injection <small>(CWE-94)</small></h3>
+              5. Sensitive File Access <small>(CWE-538)</small></h3>
+          <p class="msg">Access attempt to a sensitive/backup/config path. Server returned HTTP 200 — possible success.</p>
+          <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
+             <th>출발지</th><td class="mono">203.0.113.9</td>
+             <th>대상</th><td class="mono">web01</td></tr>
+             <tr><th>시각</th><td>03/Nov/2026:10:01:07 +0900</td>
+             <th>근거</th><td colspan="3" class="mono">/htdocs.zip</td></tr></table>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
+          <div class="fix"><b>조치 권고</b> Remove such files from the webroot; block these paths.</div>
+        </section>
+        <section class="alert">
+          <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
+              6. Webshell / Command Injection <small>(CWE-94)</small></h3>
           <p class="msg">Webshell / command-execution attempt. Server returned HTTP 200 — possible success.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-RCE-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">web01</td></tr>
              <tr><th>시각</th><td>03/Nov/2026:10:01:08 +0900</td>
              <th>근거</th><td colspan="3" class="mono">/uploads/shell.php?cmd=id</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>HTTP 200 (성공 가능)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li><li>PMS: trigger patch on web01 (CVE-2024-1234, CVE-2024-5678)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Forbid PHP execution in upload dirs; validate inputs.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#b3123b">긴급 · CRITICAL</span>
-              6. Brute Force <small>(ATT&amp;CK-T1110)</small></h3>
+              7. Brute Force <small>(ATT&amp;CK-T1110)</small></h3>
           <p class="msg">SSH brute force: 6 failed logins from 203.0.113.9.</p>
           <table class="meta"><tr><th>규칙</th><td>AUTH-BF-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">-</td></tr>
              <tr><th>시각</th><td>Nov  3 10:02:00</td>
              <th>근거</th><td colspan="3" class="mono">6 failed password events</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>LureTrace: 미끼 접촉</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Lock the source; enforce key-only auth + fail2ban.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#d9480f">높음 · HIGH</span>
-              7. Cross-Site Scripting <small>(CWE-79)</small></h3>
-          <p class="msg">Cross-site scripting payload observed in request.</p>
-          <table class="meta"><tr><th>규칙</th><td>WEB-XSS-001</td>
+              8. Activity After Decoy Contact <small>(ATT&amp;CK-T1021)</small></h3>
+          <p class="msg">203.0.113.9 touched the decoy and also reached real services (12 events).</p>
+          <table class="meta"><tr><th>규칙</th><td>DECOY-PIVOT-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">web01</td></tr>
-             <tr><th>시각</th><td>03/Nov/2026:10:01:02 +0900</td>
-             <th>근거</th><td colspan="3" class="mono">/view.php?id=&lt;script&gt;alert(1)&lt;/script&gt;</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
-          <div class="fix"><b>조치 권고</b> HTML-encode all reflected output (ENT_QUOTES).</div>
+             <tr><th>시각</th><td>03/Nov/2026:10:01:00 +0900</td>
+             <th>근거</th><td colspan="3" class="mono">12 events in real logs, 3 on the decoy</td></tr></table>
+          <div class='chips'><span class='chip bad'>LureTrace: 미끼 접촉</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (touched decoy)</li></ul></div>
+          <div class="fix"><b>조치 권고</b> Review this source&#x27;s activity on the real services.</div>
+        </section>
+        <section class="alert">
+          <h3><span class="badge" style="background:#d9480f">높음 · HIGH</span>
+              9. Deception Contact <small>(ATT&amp;CK-T1110)</small></h3>
+          <p class="msg">203.0.113.9 touched the LureTrace decoy: 3 events, 2 credential attempts.</p>
+          <table class="meta"><tr><th>규칙</th><td>DECOY-CONTACT-001</td>
+             <th>출발지</th><td class="mono">203.0.113.9</td>
+             <th>대상</th><td class="mono">-</td></tr>
+             <tr><th>시각</th><td>2026-11-03T09:50:00Z</td>
+             <th>근거</th><td colspan="3" class="mono">users=admin,root techniques=Scanner tool,Sensitive File Access</td></tr></table>
+          <div class='chips'><span class='chip bad'>LureTrace: 미끼 접촉</span><span class='chip'>미끼에서 시도: Scanner tool, Sensitive File Access</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (touched decoy)</li></ul></div>
+          <div class="fix"><b>조치 권고</b> Investigate the source; legitimate users have no reason to reach a decoy.</div>
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              8. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
+              10. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
           <p class="msg">Endpoint/directory scanning: 24 4xx responses from 198.51.100.7.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-SCAN-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -139,7 +163,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              9. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
+              11. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
           <p class="msg">Automated scanning tool user-agent from 198.51.100.7.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-SCANUA-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -151,7 +175,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              10. Sensitive File Access <small>(CWE-538)</small></h3>
+              12. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -163,7 +187,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              11. Sensitive File Access <small>(CWE-538)</small></h3>
+              13. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -175,7 +199,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              12. Sensitive File Access <small>(CWE-538)</small></h3>
+              14. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -187,7 +211,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              13. Sensitive File Access <small>(CWE-538)</small></h3>
+              15. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -199,7 +223,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              14. Sensitive File Access <small>(CWE-538)</small></h3>
+              16. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -211,7 +235,7 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              15. Sensitive File Access <small>(CWE-538)</small></h3>
+              17. Sensitive File Access <small>(CWE-538)</small></h3>
           <p class="msg">Access attempt to a sensitive/backup/config path.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-EXPOSE-001</td>
              <th>출발지</th><td class="mono">198.51.100.7</td>
@@ -223,14 +247,26 @@
         </section>
         <section class="alert">
           <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
-              16. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
+              18. Deception Contact <small>(ATT&amp;CK-T1595)</small></h3>
+          <p class="msg">198.51.100.77 touched the LureTrace decoy: 1 events, 0 credential attempts.</p>
+          <table class="meta"><tr><th>규칙</th><td>DECOY-CONTACT-001</td>
+             <th>출발지</th><td class="mono">198.51.100.77</td>
+             <th>대상</th><td class="mono">-</td></tr>
+             <tr><th>시각</th><td>2026-11-03T09:40:00Z</td>
+             <th>근거</th><td colspan="3" class="mono">users= techniques=</td></tr></table>
+          <div class='chips'><span class='chip bad'>LureTrace: 미끼 접촉</span></div>
+          <div class="fix"><b>조치 권고</b> Investigate the source; legitimate users have no reason to reach a decoy.</div>
+        </section>
+        <section class="alert">
+          <h3><span class="badge" style="background:#c08a00">중간 · MEDIUM</span>
+              19. Reconnaissance <small>(ATT&amp;CK-T1595)</small></h3>
           <p class="msg">Automated scanning tool user-agent from 203.0.113.9.</p>
           <table class="meta"><tr><th>규칙</th><td>WEB-SCANUA-001</td>
              <th>출발지</th><td class="mono">203.0.113.9</td>
              <th>대상</th><td class="mono">web01</td></tr>
              <tr><th>시각</th><td>03/Nov/2026:10:01:00 +0900</td>
              <th>근거</th><td colspan="3" class="mono">sqlmap/1.7</td></tr></table>
-          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
+          <div class='chips'><span class='chip bad'>NAC: 미관리 디바이스</span><span class='chip bad'>PMS: 미패치 (CVE-2024-1234, CVE-2024-5678)</span><span class='chip bad'>LureTrace: 미끼 접촉</span></div><div class='resp'><b>권고 대응</b><ul><li>NAC: quarantine 203.0.113.9 (unmanaged device)</li></ul></div>
           <div class="fix"><b>조치 권고</b> Block/limit automated scanners; investigate the source.</div>
         </section>
  <footer>Generated by LogSentry · 인가된 보안 모니터링 결과</footer>

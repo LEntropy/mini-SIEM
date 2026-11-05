@@ -17,11 +17,13 @@
 | **성공 가능성 판정** | 공격 시그니처 + HTTP 200 | "성공 가능" 태그, 우선순위 ↑ |
 | **무차별 대입(brute-force)** | 인증 로그(sshd) | 임계 초과 시 경보 (+NAC 연계) |
 | **스캐닝/정찰** | 4xx 폭주 · 스캐너 User-Agent | 정찰 경보 |
+| **미끼 접촉** | [LureTrace](https://github.com/LEntropy/LureTrace) 활동 기록 | 자격 증명 시도나 공격 기법이 있으면 높음 + **NAC 격리** 계획 |
+| **미끼 접촉 후 실서버 활동** | LureTrace + 인증·웹 로그 | 실서버 로그인 시 **긴급**, 기존 경보 위험도 상향 |
 
 ## 구성
 
 ```
-sources.py      멀티소스 파서 → 정규화 Event (apache access/error, sshd auth, NAC/PMS JSONL)
+sources.py      멀티소스 파서 → 정규화 Event (apache access/error, sshd auth, NAC/PMS/LureTrace JSONL)
 detect.py       시그니처 탐지(SQLi·XSS·LFI·웹셸·민감파일·스캐너) + 교차소스 상관분석
 integrations.py NAC/PMS 커넥터 — Mock(오프라인) + HTTP 어댑터(실서비스 연결)
 respond.py      대응 엔진(SOAR) — 기본 dry-run, --respond 시 실제 격리/패치
@@ -48,6 +50,32 @@ python sentry.py analyze --access /var/log/apache2/access.log --host web01 \
 # 한 줄 데모(샘플 로그로 리포트 생성)
 python demo.py
 ```
+
+## LureTrace 연동
+
+사람이 쓸 이유가 없는 미끼에 접촉한 출발지는 그 자체로 신뢰도 높은 공격 신호입니다. LureTrace가 내보낸 기록을 함께 분석하면, 같은 출발지가 실제 서버에서 한 행동의 위험도를 다시 판단합니다.
+
+```bash
+# LureTrace가 실행 중일 때 기록을 받아 함께 분석
+curl -o luretrace-events.jsonl http://127.0.0.1:8088/api/v1/export/events.jsonl
+python sentry.py analyze --access access.log --host web01 --auth auth.log \
+    --luretrace luretrace-events.jsonl --out report.html
+
+# 사내 취약점 스캐너처럼 미끼에 닿아도 되는 출발지는 제외
+python sentry.py analyze --luretrace luretrace-events.jsonl --trusted-ip 10.0.0.50
+```
+
+| 규칙 | 조건 | 위험도 |
+|---|---|---|
+| `DECOY-CONTACT-001` | 미끼에 접속만 함 | 중간 |
+| `DECOY-CONTACT-001` | 미끼에 자격 증명을 넣거나 공격 기법을 사용 | 높음 |
+| `DECOY-PIVOT-001` | 미끼에 접촉한 출발지가 실서버 로그에도 있음 | 높음 |
+| `DECOY-AUTH-001` | 미끼에 접촉한 출발지가 실서버 로그인에 성공 | 긴급 |
+
+- 미끼 기록은 실서버 트래픽으로 세지 않습니다. 미끼에 몰린 요청이 웹 스캔이나 SSH 무차별 대입 경보를 만들지 않습니다.
+- 격리는 다른 대응과 같이 기본값이 계획만(dry-run)입니다. 정상 스캐너가 격리되지 않도록 `--trusted-ip`로 제외하세요.
+- syslog 시각에는 연도와 시간대가 없어 **행동 순서는 판단하지 않습니다.** 같은 로그 묶음에 함께 나타났다는 뜻입니다.
+- LureTrace 내보내기에는 비밀번호 원문과 요청 전문이 없고, 지문(HMAC)만 있습니다.
 
 ## NAC / PMS 연동 계약 (HTTP 어댑터)
 

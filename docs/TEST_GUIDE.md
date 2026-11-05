@@ -58,7 +58,16 @@ NAC·PMS 로그를 빼고 돌려 보면(아래), 같은 웹 공격이라도 위�
 python sentry.py analyze --access samples/access.log --host web01 --auth samples/auth.log
 ```
 
-### 3-3. 실제 대응 실행 (주의)
+### 3-3. LureTrace(미끼) 기록과 함께 분석
+```bash
+python sentry.py analyze --access samples/access.log --host web01 \
+    --auth samples/auth.log --luretrace samples/luretrace.log --out report.html
+```
+`DECOY-CONTACT-001` 경보가 나오고, 미끼에 접촉한 `203.0.113.9` 의 기존 경보 위험도가 올라갑니다. 접속만 하고 끊은 `198.51.100.77` 은 중간이며 격리 계획이 생기지 않습니다.
+
+`--trusted-ip 203.0.113.9` 를 더하면 이 출발지의 미끼 경보가 사라집니다. 실제 LureTrace와 연결하는 방법은 [LureTrace 테스트 가이드](https://github.com/LEntropy/LureTrace/blob/main/docs/TEST_GUIDE.md)에 있습니다.
+
+### 3-4. 실제 대응 실행 (주의)
 ```bash
 # 오프라인 목으로 실행 흐름 확인
 python sentry.py analyze --access samples/access.log --host web01 \
@@ -76,7 +85,7 @@ python sentry.py analyze --access /var/log/apache2/access.log --host web01 \
 
 | 파일 | 역할 |
 |---|---|
-| `sources.py` | 웹/인증/NAC/PMS 로그를 공통 `Event` 로 파싱 |
+| `sources.py` | 웹/인증/NAC/PMS/LureTrace 로그를 공통 `Event` 로 파싱 |
 | `detect.py` | 시그니처 탐지 + 교차소스 상관분석 |
 | `integrations.py` | NAC/PMS 커넥터(Mock/HTTP) |
 | `respond.py` | 대응 엔진(격리/패치, 기본 dry-run) |

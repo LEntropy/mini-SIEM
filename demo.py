@@ -22,6 +22,7 @@ def main():
         {"path": os.path.join(S, "auth.log"), "kind": "auth"},
         {"path": os.path.join(S, "nac.log"), "kind": "nac"},
         {"path": os.path.join(S, "pms.log"), "kind": "pms"},
+        {"path": os.path.join(S, "luretrace.log"), "kind": "luretrace"},
     ])
     alerts = analyze(events)
     actions = respond(alerts, execute=False)      # plan only

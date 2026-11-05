@@ -6,7 +6,8 @@ PMS connectors. SAFE BY DEFAULT: with execute=False it only *plans* actions;
 pass execute=True (CLI --respond) to actually call the connectors.
 
 Actions:
-  * NAC.quarantine     — high/critical alert from an unmanaged device (NAC)
+  * NAC.quarantine     — high/critical alert from an unmanaged device (NAC) or a
+                         source that touched a decoy (LureTrace)
   * PMS.request_patch  — critical exploitation against an unpatched asset (PMS)
 """
 from __future__ import annotations
@@ -33,8 +34,8 @@ def respond(alerts, nac=None, pms=None, execute=False) -> List[Action]:
         if a.severity not in ("high", "critical"):
             continue
 
-        # Containment: quarantine an unmanaged hostile source via NAC
-        if a.src_ip and a.enrichment.get("device_managed") is False:
+        # Containment: quarantine an unmanaged hostile source, or one that touched a decoy, via NAC
+        if a.src_ip and (a.enrichment.get("device_managed") is False or a.enrichment.get("decoy_contact")):
             key = ("nac", a.src_ip)
             if key not in seen:
                 seen.add(key)

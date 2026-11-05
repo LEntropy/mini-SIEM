@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Continue"
 Set-Location $PSScriptRoot
 $fail = 0
-foreach ($t in "test_sources","test_detect","test_respond","test_report") {
+foreach ($t in "test_sources","test_detect","test_respond","test_report","test_luretrace") {
     Write-Host "`n==== $t ====" -ForegroundColor Cyan
     python "tests/$t.py"
     if ($LASTEXITCODE -ne 0) { $fail = 1 }

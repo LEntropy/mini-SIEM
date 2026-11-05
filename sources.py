@@ -8,12 +8,14 @@ Supported sources:
   - auth log (sshd failed/accepted password)
   - NAC event log  (JSON lines emitted by the NAC project)
   - PMS event log  (JSON lines emitted by the PMS project)
+  - LureTrace export (JSON lines of decoy activity from the LureTrace sensor)
 
 The NAC/PMS formats are JSON-lines so any producer can emit them; see
 samples/ and docs/TEST_GUIDE.md for the expected fields.
 """
 from __future__ import annotations
 
+import ipaddress
 import json
 import re
 from typing import List, Iterable
@@ -89,6 +91,8 @@ def _parse_jsonl(text: str, source: str, kind: str) -> List[Event]:
             d = json.loads(line)
         except ValueError:
             continue
+        if not isinstance(d, dict):
+            continue
         out.append(Event(
             source=source, kind=kind, ts=str(d.get("ts", "")),
             ip=str(d.get("ip", "")), host=str(d.get("host", "")),
@@ -106,6 +110,40 @@ def parse_pms(text: str) -> List[Event]:
     return _parse_jsonl(text, "pms", "pms_event")
 
 
+# LureTrace export event -> normalized kind. Decoy kinds are deliberately separate
+# from "request" and "auth_fail": they describe a fake service, not a real asset.
+_LURETRACE_KINDS = {
+    "ssh_auth": "decoy_auth",
+    "http_login": "decoy_auth",
+    "http_request": "decoy_request",
+    "empty_connection": "decoy_connect",
+    "protocol_anomaly": "decoy_anomaly",
+}
+
+
+def parse_luretrace(text: str) -> List[Event]:
+    """LureTrace export JSON lines (GET /api/v1/export/events.jsonl):
+    {ts, source, event, session_id, ip, port, protocol, username?,
+     password_fingerprint?, method?, path?, user_agent?, status?}.
+    Lines with an unknown event or an invalid IP are skipped."""
+    out = []
+    for e in _parse_jsonl(text, "luretrace", "decoy_event"):
+        kind = _LURETRACE_KINDS.get(e.data.get("event"))
+        if kind is None:
+            continue
+        try:
+            ipaddress.ip_address(e.ip)
+        except ValueError:
+            continue
+        e.kind = kind
+        e.path = str(e.data.get("path") or "")
+        e.ua = str(e.data.get("user_agent") or "")
+        status = e.data.get("status")
+        e.status = status if isinstance(status, int) else None
+        out.append(e)
+    return out
+
+
 _DISPATCH = {
     "apache": parse_apache_access,
     "access": parse_apache_access,
@@ -113,6 +151,7 @@ _DISPATCH = {
     "auth": parse_auth,
     "nac": parse_nac,
     "pms": parse_pms,
+    "luretrace": parse_luretrace,
 }
 
 

@@ -5,9 +5,11 @@ LogSentry — multi-source log threat detection with NAC/PMS correlation & respo
   python sentry.py analyze \
       --access samples/access.log --host web01 \
       --auth samples/auth.log --nac samples/nac.log --pms samples/pms.log \
-      --out report.html
+      --luretrace samples/luretrace.log --out report.html
 
 Options:
+  --luretrace FILE         decoy activity exported from LureTrace
+  --trusted-ip IP          source allowed to touch the decoy (repeatable)
   --respond                actually execute response actions (default: plan only)
   --nac-url / --pms-url    REST endpoints for execution (else offline mocks)
   --json                   print alerts as JSON instead of a summary
@@ -39,6 +41,8 @@ def _build_specs(args):
         specs.append({"path": args.nac, "kind": "nac"})
     if args.pms:
         specs.append({"path": args.pms, "kind": "pms"})
+    if args.luretrace:
+        specs.append({"path": args.luretrace, "kind": "luretrace"})
     return specs
 
 
@@ -59,6 +63,9 @@ def main(argv=None):
     a = sub.add_parser("analyze")
     a.add_argument("--access"); a.add_argument("--error")
     a.add_argument("--auth"); a.add_argument("--nac"); a.add_argument("--pms")
+    a.add_argument("--luretrace", help="decoy activity exported from LureTrace (JSON lines)")
+    a.add_argument("--trusted-ip", action="append", default=[], metavar="IP",
+                   help="source allowed to touch the decoy, such as your own scanner (repeatable)")
     a.add_argument("--host", default="")
     a.add_argument("--out")
     a.add_argument("--respond", action="store_true")
@@ -67,7 +74,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     events = sources.load_all(_build_specs(args))
-    alerts = analyze(events)
+    alerts = analyze(events, trusted_decoy_ips=args.trusted_ip)
 
     nac, pms = _connectors(args, events)
     actions = respond(alerts, nac=nac, pms=pms, execute=args.respond)

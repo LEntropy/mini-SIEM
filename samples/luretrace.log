@@ -1,0 +1,4 @@
+{"ts":"2026-11-03T09:40:00Z","source":"luretrace","event":"empty_connection","session_id":"00000000-0000-4000-8000-000000000001","ip":"198.51.100.77","port":2222,"protocol":"ssh"}
+{"ts":"2026-11-03T09:50:00Z","source":"luretrace","event":"http_request","session_id":"00000000-0000-4000-8000-000000000002","ip":"203.0.113.9","port":8080,"protocol":"http","method":"GET","path":"/.env","user_agent":"sqlmap/1.8","status":404}
+{"ts":"2026-11-03T09:50:05Z","source":"luretrace","event":"ssh_auth","session_id":"00000000-0000-4000-8000-000000000003","ip":"203.0.113.9","port":2222,"protocol":"ssh","username":"root","password_fingerprint":"9dc87e25c4021163"}
+{"ts":"2026-11-03T09:50:06Z","source":"luretrace","event":"http_login","session_id":"00000000-0000-4000-8000-000000000004","ip":"203.0.113.9","port":8080,"protocol":"http","username":"admin","password_fingerprint":"218a29057d3c227c","method":"POST","path":"/login","user_agent":"python-requests/2.32","status":401}

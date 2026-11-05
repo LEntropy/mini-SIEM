@@ -10,8 +10,8 @@ SEVERITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
 @dataclass
 class Event:
     """A single log line normalized across all sources (apache/auth/nac/pms)."""
-    source: str                      # apache | auth | nac | pms
-    kind: str                        # request | php_error | auth_fail | nac_event | pms_event
+    source: str                      # apache | auth | nac | pms | luretrace
+    kind: str                        # request | php_error | auth_fail | nac_event | pms_event | decoy_*
     ts: str = ""                     # ISO-ish timestamp string
     ip: str = ""                     # source IP (attacker / client / device)
     host: str = ""                   # target host / asset (when known)
